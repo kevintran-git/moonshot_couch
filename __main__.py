@@ -7,9 +7,12 @@ from detect_motor_controllers import get_motor_controllers
 from mathutils import square, deadzone
 from motor_controller import VirtualMotorController
 
+SLOW_SPEED = 0.3
+MEDIUM_SPEED = 0.5
+MAX_SPEED = 1
+
 
 def curvture_drive_ik(speed: float, rotation: float) -> Tuple[float, float]:
-
     DEADZONE = 0.05
 
     """Curvature drive inverse kinematics for a differential drive platform.
@@ -38,6 +41,14 @@ def curvture_drive_ik(speed: float, rotation: float) -> Tuple[float, float]:
     return left_speed, right_speed
 
 
+def get_speed_multiplier(stick: Controllers.Joystick) -> float:
+    if stick.isPressed('MODEA'):
+        return MEDIUM_SPEED
+    if stick.isPressed('MODEB'):
+        return MAX_SPEED
+    return SLOW_SPEED
+
+
 if __name__ == '__main__':
 
     VERTICAL_JOYSTICK_AXIS = 1
@@ -54,9 +65,8 @@ if __name__ == '__main__':
     joystick.startBackgroundUpdates()
 
     # Waits for the motor controllers to be connected
-    # left_motor, right_motor = get_motor_controllers()
-    left_motor = VirtualMotorController("Left")
-    right_motor = VirtualMotorController("Right")
+    #left_motor, right_motor = get_motor_controllers()
+    left_motor, right_motor = VirtualMotorController("Left"), VirtualMotorController("Right")
 
     # Main loop
     try:
@@ -66,8 +76,8 @@ if __name__ == '__main__':
             # print(f"Vertical: {joystick_vertical}, Horizontal: {joystick_horizontal}")
             ik_left, ik_right = curvture_drive_ik(joystick_vertical, joystick_horizontal)
             print(f"Left: {ik_left}, Right: {ik_right}")
-            left_motor.set_speed(ik_left)
-            right_motor.set_speed(ik_right)
+            left_motor.set_speed(ik_left) * get_speed_multiplier(joystick)
+            right_motor.set_speed(ik_right) * get_speed_multiplier(joystick)
 
     finally:
         del left_motor

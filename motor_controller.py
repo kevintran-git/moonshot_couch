@@ -33,7 +33,6 @@ class VirtualMotorController(MotorController):
 
     def set_speed(self, speed: float):
         self.speed = speed
-        print(f"Motor {self.name}: {self.speed}")
 
     def get_speed(self):
         return self.speed
