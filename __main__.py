@@ -76,8 +76,8 @@ if __name__ == '__main__':
             # print(f"Vertical: {joystick_vertical}, Horizontal: {joystick_horizontal}")
             ik_left, ik_right = curvture_drive_ik(joystick_vertical, joystick_horizontal)
             print(f"Left: {ik_left}, Right: {ik_right}")
-            left_motor.set_speed(ik_left) * get_speed_multiplier(joystick)
-            right_motor.set_speed(ik_right) * get_speed_multiplier(joystick)
+            left_motor.set_speed(ik_left * get_speed_multiplier(joystick))
+            right_motor.set_speed(ik_right * get_speed_multiplier(joystick))
 
     finally:
         del left_motor
