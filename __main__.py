@@ -1,6 +1,6 @@
 from typing import Tuple
 
-import Gamepad as Gamepad
+import Gamepad.Gamepad as Gamepad
 import Gamepad.Controllers as Controllers
 import time
 from detect_motor_controllers import get_motor_controllers
