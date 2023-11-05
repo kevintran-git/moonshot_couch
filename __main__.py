@@ -1,7 +1,7 @@
 from typing import Tuple
 
-from moonshot_couch.Gamepad import Gamepad as Gamepad
-import moonshot_couch.Gamepad.Controllers as Controllers
+from Gamepad import Gamepad as Gamepad
+import Gamepad.Controllers as Controllers
 import time
 from detect_motor_controllers import get_motor_controllers
 from mathutils import square, deadzone

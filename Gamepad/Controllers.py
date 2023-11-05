@@ -4,7 +4,7 @@ Standard gamepad mappings.
 
 Pulled in to Gamepad.py directly.
 """
-from moonshot_couch.Gamepad.Gamepad import Gamepad
+from Gamepad import Gamepad
 
 
 class PS3(Gamepad):

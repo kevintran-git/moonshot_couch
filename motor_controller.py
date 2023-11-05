@@ -1,6 +1,6 @@
 from pyvesc import VESC
 
-from mathutils import map_range, deadzone
+from mathutils import map_range
 
 
 class MotorController:
