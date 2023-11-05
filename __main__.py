@@ -5,6 +5,7 @@ import Gamepad.Controllers as Controllers
 import time
 from detect_motor_controllers import get_motor_controllers
 from mathutils import square, deadzone
+from motor_controller import VirtualMotorController
 
 
 def curvture_drive_ik(speed: float, rotation: float) -> Tuple[float, float]:
@@ -53,7 +54,9 @@ if __name__ == '__main__':
     joystick.startBackgroundUpdates()
 
     # Waits for the motor controllers to be connected
-    left_motor, right_motor = get_motor_controllers()
+    # left_motor, right_motor = get_motor_controllers()
+    left_motor = VirtualMotorController("Left")
+    right_motor = VirtualMotorController("Right")
 
     # Main loop
     try:

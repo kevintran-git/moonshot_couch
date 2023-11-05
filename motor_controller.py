@@ -23,3 +23,17 @@ class VESCMotorController(MotorController):
     def __del__(self):
         # Stop the heartbeat to prevent the motor from spinning
         self.motor.stop_heartbeat()
+
+
+class VirtualMotorController(MotorController):
+    def __init__(self, name: str):
+        self.speed = 0
+        self.name = name
+        print(f"Initialized motor {self.name}")
+
+    def set_speed(self, speed: float):
+        self.speed = speed
+        print(f"Motor {self.name}: {self.speed}")
+
+    def get_speed(self):
+        return self.speed
