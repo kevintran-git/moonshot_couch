@@ -31,8 +31,8 @@ class CanVESC(MotorController):
         self.parent_vesc = parent_vesc
         self.can_id = can_id
 
-    def set_speed(self, speed: int):
-        scaled_speed = map_range(speed, -1, 1, -VESCMotorController.MAX_RPM, VESCMotorController.MAX_RPM)
+    def set_speed(self, speed: float):
+        scaled_speed = int(map_range(speed, -1, 1, -VESCMotorController.MAX_RPM, VESCMotorController.MAX_RPM))
         packet = encode(SetRPM(scaled_speed, can_id=self.can_id))
         self.parent_vesc.write(packet)
 
