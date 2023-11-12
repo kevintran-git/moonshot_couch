@@ -23,11 +23,12 @@ def curvture_drive_ik(speed: float, rotation: float) -> Tuple[float, float]:
     Returns:
       Wheel speeds [-1.0..1.0].
     """
+    speed = deadzone(speed, DEADZONE)
+
     # decreases input sensitivity at low speeds
     speed = square(speed)
     rotation = square(rotation)
 
-    speed = deadzone(speed, DEADZONE)
     left_speed = speed + abs(speed) * rotation
     right_speed = speed - abs(speed) * rotation
 

@@ -1,5 +1,6 @@
 """Math utilities."""
 
+
 def map_range(x, in_min, in_max, out_min, out_max):
     """
     Maps a value in one range to another range.
@@ -14,6 +15,7 @@ def deadzone(x: float, min_val: float) -> float:
     if abs(x) < min_val:
         return 0
     return x
+
 
 def apply_deadband(value: float, deadband: float, max_magnitude: float) -> float:
     """
