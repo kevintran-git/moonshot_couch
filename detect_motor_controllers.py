@@ -4,7 +4,7 @@ from typing import Tuple
 import serial
 from pyvesc import VESC
 import time
-from motor_controller import VESCMotorController
+from motor_controller import VESCMotorController, CanVESC, MotorController
 
 LEFT_MOTOR_ID = 42
 RIGHT_MOTOR_ID = 78
@@ -38,10 +38,9 @@ def get_serial_ports():
     return result
 
 
-def get_motor_controllers() -> Tuple[VESCMotorController, VESCMotorController]:
+def get_motor_controllers() -> Tuple[MotorController, MotorController]:
     left_vesc = None
-    right_vesc = None
-    while left_vesc is None or right_vesc is None:
+    while left_vesc is None:
         for port in get_serial_ports():
             if port.startswith("/dev/ttyACM"):
                 print(f"Connecting to {port}")
@@ -51,10 +50,9 @@ def get_motor_controllers() -> Tuple[VESCMotorController, VESCMotorController]:
                     vesc_id = int.from_bytes(byte, byteorder='big', signed=True)
                     if vesc_id == LEFT_MOTOR_ID:
                         left_vesc = VESCMotorController(vesc)
-                    elif vesc_id == RIGHT_MOTOR_ID:
-                        right_vesc = VESCMotorController(vesc)
                 except:
                     print("Error connecting to VESC, retrying")
         print("No VESCs found, retrying")
         time.sleep(1)
+    right_vesc = CanVESC(left_vesc.motor, RIGHT_MOTOR_ID)
     return left_vesc, right_vesc

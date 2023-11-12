@@ -1,4 +1,5 @@
-from pyvesc import VESC
+from pyvesc import VESC, encode
+from pyvesc.VESC.messages import SetRPM
 
 from mathutils import map_range
 
@@ -23,6 +24,21 @@ class VESCMotorController(MotorController):
     def __del__(self):
         # Stop the heartbeat to prevent the motor from spinning
         self.motor.stop_heartbeat()
+
+
+class CanVESC(MotorController):
+    def __init__(self, parent_vesc: VESC, can_id: int):
+        self.parent_vesc = parent_vesc
+        self.can_id = can_id
+
+    def set_speed(self, speed: int):
+        scaled_speed = map_range(speed, -1, 1, -VESCMotorController.MAX_RPM, VESCMotorController.MAX_RPM)
+        packet = encode(SetRPM(scaled_speed, can_id=self.can_id))
+        self.parent_vesc.write(packet)
+
+    def __del__(self):
+        # Stop the heartbeat to prevent the motor from spinning
+        self.parent_vesc.stop_heartbeat()
 
 
 class VirtualMotorController(MotorController):
