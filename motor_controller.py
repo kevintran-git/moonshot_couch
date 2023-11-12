@@ -1,6 +1,5 @@
 from pyvesc import VESC, encode
 from pyvesc.VESC.messages import SetRPM
-
 from mathutils import map_range
 
 

@@ -54,5 +54,5 @@ def get_motor_controllers() -> Tuple[MotorController, MotorController]:
                     print("Error connecting to VESC, retrying")
         print("No VESCs found, retrying")
         time.sleep(1)
-    right_vesc = CanVESC(left_vesc.motor, RIGHT_MOTOR_ID)
+    right_vesc = CanVESC(parent_vesc=left_vesc.motor, can_id=RIGHT_MOTOR_ID)
     return left_vesc, right_vesc
