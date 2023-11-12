@@ -1,2 +1,3 @@
 pyvesc~=1.0.5
 pyserial~=3.5
+git+https://github.com/Scott-Hickmann/PyVESC.git
