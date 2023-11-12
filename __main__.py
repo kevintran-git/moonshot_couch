@@ -44,9 +44,10 @@ def curvture_drive_ik(speed: float, rotation: float) -> Tuple[float, float]:
 def get_speed_multiplier(stick: Controllers.Joystick) -> float:
     if stick.isPressed('MODEA'):
         return MEDIUM_SPEED
-    if stick.isPressed('MODEB'):
+    elif stick.isPressed('MODEB'):
         return MAX_SPEED
-    return SLOW_SPEED
+    else:
+        return SLOW_SPEED
 
 
 if __name__ == '__main__':
@@ -76,9 +77,25 @@ if __name__ == '__main__':
             ik_left, ik_right = curvture_drive_ik(joystick_vertical, joystick_horizontal)
             ik_left *= get_speed_multiplier(joystick)
             ik_right *= get_speed_multiplier(joystick)
-            print(f"Left: {ik_left}, Right: {ik_right}")
-            left_motor.set_speed(ik_left)
-            right_motor.set_speed(ik_right)
+
+            try:
+                left_rpm = left_motor.get_rpm()
+                right_rpm = right_motor.get_rpm()
+            except:
+                left_rpm = 0
+                right_rpm = 0
+
+            print(f"Left: {ik_left}, Right: {ik_right}, Left RPM: {left_rpm}, Right RPM {right_rpm}")
+
+            if left_rpm >= 0 or ik_left >= 0:
+                left_motor.set_current(ik_left)
+            else:
+                left_motor.set_rpm(0)
+
+            if right_rpm >= 0 or ik_right >= 0:
+                right_motor.set_current(ik_right)
+            else:
+                right_motor.set_rpm(0)
 
     finally:
         del left_motor

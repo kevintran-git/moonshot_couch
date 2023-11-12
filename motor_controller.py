@@ -1,24 +1,50 @@
-from pyvesc import VESC, encode
-from pyvesc.VESC.messages import SetRPM
+from pyvesc import VESC, encode, encode_request, decode
+from pyvesc.VESC.messages import SetCurrent, SetRPM, GetValues
 from mathutils import map_range
 
 
 class MotorController:
     """Sets the speed of the motor, from -1 to 1."""
 
-    def set_speed(self, speed: float):
-        pass
+    def speed_to_rpm(self, speed: float):
+        return int(map_range(speed, -1, 1, -VESCMotorController.MAX_RPM, VESCMotorController.MAX_RPM))
+
+    def speed_to_current(self, speed: float):
+        return int(map_range(speed, -1, 1, -VESCMotorController.MAX_CURRENT, VESCMotorController.MAX_CURRENT))
+
+    def set_rpm(self, speed: float):
+        raise NotImplementedError
+
+    def set_current(self, speed: float):
+        raise NotImplementedError
+
+    def get_rpm(self):
+        raise NotImplementedError
+
+    def get_measurements(self):
+        raise NotImplementedError
 
 
 class VESCMotorController(MotorController):
     MAX_RPM = 10000
+    MAX_CURRENT = 20
 
     def __init__(self, motor: VESC):
         self.motor = motor
 
-    def set_speed(self, speed: float):
-        scaled_speed = map_range(speed, -1, 1, -VESCMotorController.MAX_RPM, VESCMotorController.MAX_RPM)
-        self.motor.set_rpm(int(scaled_speed))
+    def set_rpm(self, speed: float):
+        rpm = self.speed_to_rpm(speed)
+        self.motor.set_rpm(rpm)
+
+    def set_current(self, speed: float):
+        current = self.speed_to_current(speed)
+        self.motor.set_current(current)
+
+    def get_measurements(self):
+        return self.get_measurements()
+
+    def get_rpm(self):
+        return self.motor.get_rpm()
 
     def __del__(self):
         # Stop the heartbeat to prevent the motor from spinning
@@ -29,25 +55,26 @@ class CanVESC(MotorController):
     def __init__(self, parent_vesc: VESC, can_id: int):
         self.parent_vesc = parent_vesc
         self.can_id = can_id
+        msg = GetValues(can_id=can_id)
+        self._get_values_msg = encode_request(msg)
+        self._get_values_msg_expected_length = msg._full_msg_size
 
-    def set_speed(self, speed: float):
-        scaled_speed = int(map_range(speed, -1, 1, -VESCMotorController.MAX_RPM, VESCMotorController.MAX_RPM))
-        packet = encode(SetRPM(scaled_speed, can_id=self.can_id))
+    def set_rpm(self, speed: float):
+        rpm = self.speed_to_rpm(speed)
+        packet = encode(SetRPM(rpm, can_id=self.can_id))
         self.parent_vesc.write(packet)
+
+    def set_current(self, speed: float):
+        current = self.speed_to_current(speed)
+        packet = encode(SetCurrent(current, can_id=self.can_id))
+        self.parent_vesc.write(packet)
+
+    def get_measurements(self):
+        return self.parent_vesc.write(self._get_values_msg, num_read_bytes=self._get_values_msg_expected_length)
+
+    def get_rpm(self):
+        return self.get_measurements().rpm
 
     def __del__(self):
         # Stop the heartbeat to prevent the motor from spinning
         self.parent_vesc.stop_heartbeat()
-
-
-class VirtualMotorController(MotorController):
-    def __init__(self, name: str):
-        self.speed = 0
-        self.name = name
-        print(f"Initialized motor {self.name}")
-
-    def set_speed(self, speed: float):
-        self.speed = speed
-
-    def get_speed(self):
-        return self.speed
