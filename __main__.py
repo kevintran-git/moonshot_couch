@@ -27,7 +27,7 @@ def curvture_drive_ik(speed: float, rotation: float) -> Tuple[float, float]:
 
     # decreases input sensitivity at low speeds
     speed = square(speed)
-    rotation = square(rotation)
+    # rotation = square(rotation)
 
     left_speed = speed + abs(speed) * rotation
     right_speed = speed - abs(speed) * rotation
@@ -87,15 +87,18 @@ if __name__ == '__main__':
 
             print(f"Left: {ik_left}, Right: {ik_right}, Left RPM: {left_rpm}, Right RPM {right_rpm}")
 
-            if left_rpm >= 0 or ik_left >= 0:
-                left_motor.set_current(ik_left)
-            else:
-                left_motor.set_rpm(0)
+            # if left_rpm >= 0 or ik_left >= 0:
+            #     left_motor.set_current(ik_left)
+            # else:
+            #     left_motor.set_rpm(0)
+            #
+            # if right_rpm >= 0 or ik_right >= 0:
+            #     right_motor.set_current(ik_right)
+            # else:
+            #     right_motor.set_rpm(0)
 
-            if right_rpm >= 0 or ik_right >= 0:
-                right_motor.set_current(ik_right)
-            else:
-                right_motor.set_rpm(0)
+            left_motor.set_rpm(ik_left)
+            right_motor.set_rpm(ik_right)
 
     finally:
         del left_motor

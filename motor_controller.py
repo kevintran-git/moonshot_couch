@@ -26,7 +26,7 @@ class MotorController:
 
 
 class VESCMotorController(MotorController):
-    MAX_RPM = 10000
+    MAX_RPM = 20000
     MAX_CURRENT = 20
 
     def __init__(self, motor: VESC):
