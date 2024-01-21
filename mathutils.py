@@ -1,4 +1,5 @@
 """Math utilities."""
+from typing import Tuple
 
 
 def map_range(x, in_min, in_max, out_min, out_max):
@@ -17,8 +18,57 @@ def deadzone(x: float, min_val: float) -> float:
     return x
 
 
+def scale_and_deadzone_inputs(speed: float, rotation: float, square_rotation: bool = True, deadzone: float = 0.05) -> Tuple[float, float]:
+    """Apply deadzone and scaling to the inputs.
+
+    Args:
+        speed: The linear speed component.
+        rotation: The rotational speed component.
+        square_rotation: Whether to square the rotation input to decrease sensitivity.
+        deadzone: The deadzone to apply to the inputs.
+
+    Returns:
+        Tuple of scaled speed and rotation.
+    """
+    speed = deadzone(speed, deadzone)
+    rotation = deadzone(rotation, deadzone)
+    speed = square(speed)
+    if square_rotation:
+        rotation = square(rotation)
+    return speed, rotation
+
+
+def desaturate_wheel_speeds(left_speed: float, right_speed: float, use_max: bool = True) -> Tuple[float, float]:
+    """Rescale wheel speeds to [-1.0..1.0] range if necessary.
+
+    Args:
+        left_speed: The calculated speed for the left wheel.
+        right_speed: The calculated speed for the right wheel.
+        use_max: If True, use the maximum absolute speed for desaturation. If False, use a different calculation involving both inputs.
+
+    Returns:
+        Tuple of desaturated left and right wheel speeds.
+    """
+    if use_max:
+        max_magnitude = max(abs(left_speed), abs(right_speed))
+        if max_magnitude > 1:
+            left_speed /= max_magnitude
+            right_speed /= max_magnitude
+    else:
+        greater_input = max(abs(left_speed), abs(right_speed))
+        less_input = min(abs(left_speed), abs(right_speed))
+        if greater_input == 0:
+            return 0, 0
+        saturated_input = (greater_input + less_input) / greater_input
+        left_speed /= saturated_input
+        right_speed /= saturated_input
+
+    return left_speed, right_speed
+
+
 def apply_deadband(value: float, deadband: float, max_magnitude: float) -> float:
     """
+    Currently unused.
     Returns 0.0 if the given value is within the specified range around zero. The remaining range
     between the deadband and the maximum magnitude is scaled from 0.0 to the maximum magnitude.
 
@@ -74,6 +124,7 @@ def apply_deadband(value: float, deadband: float, max_magnitude: float) -> float
 
 def clamp(value: float, min_value: float, max_value: float) -> float:
     """
+    Currently unused.
     Returns the value clamped to the range [min_value, max_value].
 
     @param value: Value to clamp.

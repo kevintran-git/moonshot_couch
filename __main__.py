@@ -4,7 +4,7 @@ import Gamepad.Gamepad as Gamepad
 import Gamepad.Controllers as Controllers
 import time
 from detect_motor_controllers import get_motor_controllers
-from mathutils import square, deadzone
+import mathutils
 
 SLOW_SPEED = 0.3
 MEDIUM_SPEED = 0.5
@@ -12,8 +12,6 @@ MAX_SPEED = 1
 
 
 def curvture_drive_ik(speed: float, rotation: float) -> Tuple[float, float]:
-    DEADZONE = 0.05
-
     """Curvature drive inverse kinematics for a differential drive platform.
 
     Args:
@@ -23,22 +21,25 @@ def curvture_drive_ik(speed: float, rotation: float) -> Tuple[float, float]:
     Returns:
       Wheel speeds [-1.0..1.0].
     """
-    speed = deadzone(speed, DEADZONE)
-
-    # decreases input sensitivity at low speeds
-    speed = square(speed)
-    # rotation = square(rotation)
-
+    speed, rotation = mathutils.scale_and_deadzone_inputs(speed, rotation, square_rotation=False)
     left_speed = speed + abs(speed) * rotation
     right_speed = speed - abs(speed) * rotation
+    return mathutils.desaturate_wheel_speeds(left_speed, right_speed)
 
-    # desaturates the wheel speeds
-    max_magnitude = max(abs(left_speed), abs(right_speed))
-    if max_magnitude > 1:
-        left_speed /= max_magnitude
-        right_speed /= max_magnitude
+def arcade_drive_ik(speed: float, rotation: float) -> Tuple[float, float]:
+    """Arcade drive inverse kinematics for a differential drive platform.
 
-    return left_speed, right_speed
+    Args:
+      speed: The speed along the X axis [-1.0..1.0]. Forward is positive.
+      rotation: The normalized curvature [-1.0..1.0]. Counterclockwise is positive.
+
+    Returns:
+      Wheel speeds [-1.0..1.0].
+    """
+    speed, rotation = mathutils.scale_and_deadzone_inputs(speed, rotation)
+    left_speed = speed + rotation
+    right_speed = speed - rotation
+    return mathutils.desaturate_wheel_speeds(left_speed, right_speed, use_max=False)
 
 
 def get_speed_multiplier(stick: Controllers.Joystick) -> float:
@@ -73,8 +74,7 @@ if __name__ == '__main__':
         while joystick.isConnected():
             joystick_vertical = -joystick.axis('Y')
             joystick_horizontal = joystick.axis('X')
-            # print(f"Vertical: {joystick_vertical}, Horizontal: {joystick_horizontal}")
-            ik_left, ik_right = curvture_drive_ik(joystick_vertical, joystick_horizontal)
+            ik_left, ik_right = arcade_drive_ik(joystick_vertical, joystick_horizontal)
             ik_left *= get_speed_multiplier(joystick)
             ik_right *= get_speed_multiplier(joystick)
 
