@@ -12,9 +12,18 @@ def call_horn():
     GPIO.setmode(GPIO.BOARD)
     GPIO.setwarnings(False)
     GPIO.setup(output_pin, GPIO.OUT)
-    GPIO.output(output_pin, GPIO.HIGH)
-    GPIO.cleanup()
 
+    try:  
+        while True:            # this will carry on until you hit CTRL+C  
+            if GPIO.input(25): # if port 25 == 1  
+                # print "Port 25 is 1/GPIO.HIGH/True - button pressed"  
+                GPIO.output(output_pin, GPIO.HIGH)
+            else:  
+                # print "Port 25 is 0/GPIO.LOW/False - button not pressed"  
+            sleep(0.1)         # wait 0.1 seconds  
+    
+    except KeyboardInterrupt:  
+        GPIO.cleanup() 
     return True
 
 call_horn()
