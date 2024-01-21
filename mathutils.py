@@ -18,7 +18,7 @@ def deadzone(x: float, min_val: float) -> float:
     return x
 
 
-def scale_and_deadzone_inputs(speed: float, rotation: float, square_rotation: bool = True, deadzone: float = 0.05) -> Tuple[float, float]:
+def scale_and_deadzone_inputs(speed: float, rotation: float, square_rotation: bool = True, deadband: float = 0.05) -> Tuple[float, float]:
     """Apply deadzone and scaling to the inputs.
 
     Args:
@@ -30,8 +30,8 @@ def scale_and_deadzone_inputs(speed: float, rotation: float, square_rotation: bo
     Returns:
         Tuple of scaled speed and rotation.
     """
-    speed = deadzone(speed, deadzone)
-    rotation = deadzone(rotation, deadzone)
+    speed = deadzone(speed, deadband)
+    rotation = deadzone(rotation, deadband)
     speed = square(speed)
     if square_rotation:
         rotation = square(rotation)
