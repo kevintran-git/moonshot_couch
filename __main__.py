@@ -26,6 +26,7 @@ def curvture_drive_ik(speed: float, rotation: float) -> Tuple[float, float]:
     right_speed = speed - abs(speed) * rotation
     return mathutils.desaturate_wheel_speeds(left_speed, right_speed)
 
+
 def arcade_drive_ik(speed: float, rotation: float) -> Tuple[float, float]:
     """Arcade drive inverse kinematics for a differential drive platform.
 
@@ -97,8 +98,8 @@ if __name__ == '__main__':
             # else:
             #     right_motor.set_rpm(0)
 
-            left_motor.set_rpm(ik_left)
-            right_motor.set_rpm(ik_right)
+            left_motor.set_duty_cycle(ik_left)
+            right_motor.set_duty_cycle(ik_right)
 
     finally:
         del left_motor
