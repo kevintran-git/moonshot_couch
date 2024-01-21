@@ -12,8 +12,8 @@ def call_horn():
     GPIO.setmode(GPIO.BOARD)
     GPIO.setwarnings(False)
     GPIO.setup(output_pin, GPIO.OUT)
-
     GPIO.output(output_pin, GPIO.HIGH)
+    GPIO.cleanup()
 
     return True
 
