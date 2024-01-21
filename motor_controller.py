@@ -12,9 +12,6 @@ class MotorController:
     def speed_to_current(self, speed: float):
         return int(map_range(speed, -1, 1, -VESCMotorController.MAX_CURRENT, VESCMotorController.MAX_CURRENT))
     
-    def set_duty_cycle(self, speed: float):
-        return int(map_range(speed, -1, 1, -1e5, 1e5))
-
     def set_rpm(self, speed: float):
         raise NotImplementedError
 
@@ -43,10 +40,6 @@ class VESCMotorController(MotorController):
         current = self.speed_to_current(speed)
         self.motor.set_current(current)
 
-    def set_duty_cycle(self, speed: float):
-        duty_cycle = self.set_duty_cycle(speed)
-        self.motor.set_duty_cycle(duty_cycle)
-
     def get_measurements(self):
         return self.motor.get_measurements()
     
@@ -74,11 +67,6 @@ class CanVESC(MotorController):
     def set_current(self, speed: float):
         current = self.speed_to_current(speed)
         packet = encode(SetCurrent(current, can_id=self.can_id))
-        self.parent_vesc.write(packet)
-    
-    def set_duty_cycle(self, speed: float):
-        duty_cycle = self.set_duty_cycle(speed)
-        packet = encode(SetDutyCycle(duty_cycle, can_id=self.can_id))
         self.parent_vesc.write(packet)
 
     def get_measurements(self):

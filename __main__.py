@@ -40,7 +40,7 @@ def arcade_drive_ik(speed: float, rotation: float) -> Tuple[float, float]:
     speed, rotation = mathutils.scale_and_deadzone_inputs(speed, rotation)
     left_speed = speed + rotation
     right_speed = speed - rotation
-    return mathutils.desaturate_wheel_speeds(left_speed, right_speed, use_max=False)
+    return mathutils.desaturate_wheel_speeds(left_speed, right_speed)
 
 
 def get_speed_multiplier(stick: Controllers.Joystick) -> float:
@@ -88,6 +88,13 @@ if __name__ == '__main__':
 
             print(f"Left: {ik_left}, Right: {ik_right}, Left RPM: {left_rpm}, Right RPM {right_rpm}")
 
+            if (joystick.isPressed('TRIGGER')):
+                left_motor.set_current(ik_left)
+                right_motor.set_current(ik_right)
+            else:
+                left_motor.set_rpm(ik_left)
+                right_motor.set_rpm(ik_right)
+
             # if left_rpm >= 0 or ik_left >= 0:
             #     left_motor.set_current(ik_left)
             # else:
@@ -97,10 +104,7 @@ if __name__ == '__main__':
             #     right_motor.set_current(ik_right)
             # else:
             #     right_motor.set_rpm(0)
-
-            left_motor.set_current(ik_left)
-            right_motor.set_current(ik_right)
-
+                
     finally:
         del left_motor
         del right_motor
