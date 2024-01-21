@@ -3,6 +3,7 @@ try:
     import RPi.GPIO as GPIO
 except RuntimeError:
     print("Error importing RPi.GPIO!  This is probably because you need superuser privileges.  You can achieve this by using 'sudo' to run your script")
+from time import sleep     # this lets us have a time delay (see line 12)  
 
 
 def call_horn():
@@ -12,16 +13,10 @@ def call_horn():
     GPIO.setmode(GPIO.BOARD)
     GPIO.setwarnings(False)
     GPIO.setup(output_pin, GPIO.OUT)
-
     try:  
         while True:            # this will carry on until you hit CTRL+C  
-            if GPIO.input(25): # if port 25 == 1  
-                # print "Port 25 is 1/GPIO.HIGH/True - button pressed"  
-                GPIO.output(output_pin, GPIO.HIGH)
-            else:  
-                # print "Port 25 is 0/GPIO.LOW/False - button not pressed"  
-            sleep(0.1)         # wait 0.1 seconds  
-    
+            GPIO.output(output_pin, GPIO.HIGH)
+            print("running")
     except KeyboardInterrupt:  
         GPIO.cleanup() 
     return True
