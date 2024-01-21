@@ -98,8 +98,8 @@ if __name__ == '__main__':
             # else:
             #     right_motor.set_rpm(0)
 
-            left_motor.set_duty_cycle(ik_left)
-            right_motor.set_duty_cycle(ik_right)
+            left_motor.set_current(ik_left)
+            right_motor.set_current(ik_right)
 
     finally:
         del left_motor
